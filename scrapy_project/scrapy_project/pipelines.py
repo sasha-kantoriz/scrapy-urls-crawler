@@ -1,14 +1,15 @@
-import os
+import logging
 import mysql.connector
 
 
 class WebspiderPipeline(object):
     def process_item(self, item, spider):
+        logging.info(f"{'=' * 80}\n\nConnecting to: mysql://{spider.db_user}:{spider.db_password.replace(' ', '+')}@{spider.db_host}:{spider.db_port}/{spider.db_name}\n\n")
         db_connection = mysql.connector.connect(
             host=spider.db_host,
             port=spider.db_port,
             user=spider.db_user,
-            passwd=spider.db_password,
+            passwd=spider.db_password.replace(' ', '+'),
             database=spider.db_name
         )
         db_cursor = db_connection.cursor()

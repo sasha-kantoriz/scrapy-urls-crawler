@@ -1,4 +1,5 @@
 import time
+import logging
 import mysql.connector
 from urllib.parse import urlparse
 from http.client import responses
@@ -39,13 +40,14 @@ class UrlsCrawlerSpider(CrawlSpider):
         cls.db_port = kwargs.get('db_port')
         cls.db_name = kwargs.get('db_name')
         cls.db_user = kwargs.get('db_user')
-        cls.db_password = kwargs.get('db_password')
+        cls.db_password = kwargs.get('db_password').replace(' ', '+')
         crawler.signals.connect(cls.spider_opened, signal=spider_opened)
         spider = super(UrlsCrawlerSpider, cls).from_crawler(crawler, *args, **kwargs)
         return spider
 
     @classmethod
     def spider_opened(cls):
+        logging.info(f"{'=' * 80}\n\nConnecting to: mysql://{cls.db_user}:{cls.db_password}@{cls.db_host}:{cls.db_port}/{cls.db_name}\n\n")
         db_connection = mysql.connector.connect(
             host=cls.db_host,
             port=cls.db_port,
@@ -68,7 +70,7 @@ class UrlsCrawlerSpider(CrawlSpider):
             host=self.db_host,
             port=self.db_port,
             user=self.db_user,
-            passwd=self.db_password,
+            passwd=self.db_password.replace(' ', '+'),
             database=self.db_name
         )
         cursor = db_connection.cursor()
