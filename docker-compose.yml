@@ -1,10 +1,20 @@
-version: "3.8"
+version: '3'
 
 services:
   scrapyd:
     image: vimagick/scrapyd
     ports:
-      - "6800:6800"
+      - "127.0.0.1:6800:6800"
     volumes:
       - ./data:/var/lib/scrapyd
     restart: unless-stopped
+
+  scrapydweb:
+    build:
+      context: ./scrapyweb/
+    depends_on:
+      - scrapyd
+    ports:
+      - "5000:5000"
+    environment:
+      - SCRAPYD_SERVERS=scrapyd:6800
