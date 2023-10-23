@@ -1,0 +1,10 @@
+version: "3.8"
+
+services:
+  scrapyd:
+    image: vimagick/scrapyd
+    ports:
+      - "6800:6800"
+    volumes:
+      - ./data:/var/lib/scrapyd
+    restart: unless-stopped
