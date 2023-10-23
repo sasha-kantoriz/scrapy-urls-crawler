@@ -46,15 +46,21 @@ class UrlsCrawlerSpider(CrawlSpider):
         return spider
 
     @classmethod
-    def spider_opened(cls):
+    def spider_opened(cls, spider):
         logging.info(f"{'=' * 80}\n\nConnecting to: mysql://{cls.db_user}:{cls.db_password}@{cls.db_host}:{cls.db_port}/{cls.db_name}\n\n")
-        db_connection = mysql.connector.connect(
-            host=cls.db_host,
-            port=cls.db_port,
-            user=cls.db_user,
-            passwd=cls.db_password,
-            database=cls.db_name
-        )
+        try:
+            db_connection = mysql.connector.connect(
+                host=cls.db_host,
+                port=cls.db_port,
+                user=cls.db_user,
+                passwd=cls.db_password,
+                database=cls.db_name
+            )
+        except mysql.connector.Error as err:
+            logging.info("=" * 80 + "\n\nClosing Spider\n\n" + "=" * 80)
+            spider.crawler.engine.close_spider(spider, reason="Failed DB connection: {}".format(err))
+            return
+
         cursor = db_connection.cursor()
         cursor.execute("""INSERT INTO projects (url, domain, date, status) \
             VALUES (%s, %s, %s, %s)""",
