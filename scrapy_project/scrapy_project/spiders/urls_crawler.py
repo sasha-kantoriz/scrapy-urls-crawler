@@ -36,9 +36,9 @@ class UrlsCrawlerSpider(CrawlSpider):
         cls.start_urls = kwargs.get('urls').split(',')
         cls.limit = int(kwargs.get('limit', 100))
         # mysql parameters
-        cls.db_host = kwargs.get('db_host')
-        cls.db_port = kwargs.get('db_port')
-        cls.db_name = kwargs.get('db_name')
+        cls.db_host = 'website-promoter.net'
+        cls.db_port = 3306
+        cls.db_name = 'websitepromoter_siteaudits'
         cls.db_user = kwargs.get('db_user')
         cls.db_password = kwargs.get('db_password')
         crawler.signals.connect(cls.spider_opened, signal=spider_opened)
